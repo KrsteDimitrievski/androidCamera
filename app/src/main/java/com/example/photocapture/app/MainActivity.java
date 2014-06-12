@@ -33,7 +33,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startUpPreview();
 
+    }
+
+    public void startUpPreview(){
         // Create an instance of Camera
         mCamera = getCameraInstance();
 
@@ -41,12 +45,21 @@ public class MainActivity extends ActionBarActivity {
         mPreview = new CameraPreview(this, mCamera);
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
         preview.addView(mPreview);
-
     }
 
     public void getPicture(View view) {
          // get an image from the camera
         mCamera.takePicture(null, null, mPicture);
+        // with picture taken, release the camera and then reset it to the preview mode
+        //
+        try {
+            Thread.sleep(1000);
+            releaseCamera();
+            startUpPreview();
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        //
     }
 
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
