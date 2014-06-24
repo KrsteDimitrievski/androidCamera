@@ -1,8 +1,8 @@
-##Timelapse App
+#Timelapse App
 
 A basic implementation of in app use of the camera as per the instructions at http://developer.android.com/guide/topics/media/camera.html
 
-#Additional notes:
+##Additional notes:
 
 -The phone needs to be rebooted in order for the images to show in the gallery area.
 
