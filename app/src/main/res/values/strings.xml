@@ -2,7 +2,10 @@
 <resources>
 
     <string name="app_name">photoCapture</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="capture">Capture</string>
+    <string name="photo_number">Photo #</string>
+    <string name="delay">Delay</string>
+    <string name="done">Done</string>
 
 </resources>

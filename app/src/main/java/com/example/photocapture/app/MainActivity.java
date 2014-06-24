@@ -3,14 +3,21 @@ package com.example.photocapture.app;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,15 +34,41 @@ public class MainActivity extends ActionBarActivity {
     private String TAG = "MainActivity";
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
-
+    private Handler mHandler = new Handler();
+    private int numberOfPhotosValue = 1;
+    private int frameCount = 1;
+    private int delayInMillisecondsValue = 1000;
+    //private PowerManager powerManager;
+    //private PowerManager.WakeLock wl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        //wl = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakelockTag");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         startUpPreview();
-
     }
+
+    public void setNumberOfPhotosValue(int input){
+        if (input < 1){
+            numberOfPhotosValue = 1;
+        }
+        else{
+            numberOfPhotosValue = input;
+        }
+    }
+
+    public void setDelayInMillisecondsValue(int input){
+        if (input < 1000){
+            delayInMillisecondsValue = 1000;
+        }
+        else{
+            delayInMillisecondsValue = input;
+        }
+    }
+
 
     public void startUpPreview(){
         // Create an instance of Camera
@@ -47,19 +80,36 @@ public class MainActivity extends ActionBarActivity {
         preview.addView(mPreview);
     }
 
-    public void getPicture(View view) {
-         // get an image from the camera
-        mCamera.takePicture(null, null, mPicture);
-        // with picture taken, release the camera and then reset it to the preview mode
-        //
-        try {
-            Thread.sleep(1000);
-            releaseCamera();
-            startUpPreview();
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
+    public void getTimelapse(View view) {
+        TextView progressCount = (TextView) findViewById(R.id.progressCount);
+        progressCount.setText("Starting");
+        EditText numberOfPhotosText = (EditText) findViewById(R.id.numberOfPhotos);
+        EditText delayInSecondsText = (EditText) findViewById(R.id.delayInSeconds);
+        String numberOfPhotosString = numberOfPhotosText.getText().toString();
+        String delayInSecondsString = delayInSecondsText.getText().toString();
+        int numberOfPhotosValue = 1;
+        int delayInMillisecondsValue = 1000;
+        if (numberOfPhotosString == null) {
+            numberOfPhotosValue = 1;
+        } else {
+            setNumberOfPhotosValue(Integer.parseInt(numberOfPhotosString));
         }
-        //
+        if (delayInSecondsString == null) {
+            delayInMillisecondsValue = 1000;
+        } else {
+            setDelayInMillisecondsValue(Integer.parseInt(delayInSecondsString) * 1000);
+        }
+        //wl.acquire();
+        mCamera.takePicture(null, null, mPicture);
+
+    }
+
+    private Runnable runTakePicture() {
+        return new Runnable() {
+            public void run() {
+                mCamera.takePicture(null, null, mPicture);
+            }
+        };
     }
 
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
@@ -83,6 +133,20 @@ public class MainActivity extends ActionBarActivity {
                 Log.d(TAG, "File not found: " + e.getMessage());
             } catch (IOException e) {
                 Log.d(TAG, "Error accessing file: " + e.getMessage());
+            }
+            TextView progressCount = (TextView) findViewById(R.id.progressCount);
+            progressCount.setText(String.valueOf(frameCount));
+            System.out.println("The number of photos detected value by mPicture " + String.valueOf(numberOfPhotosValue));
+            System.out.println("The current frame is " + String.valueOf(frameCount));
+            frameCount++;
+            if (frameCount <= numberOfPhotosValue){
+                mCamera.startPreview();
+                mHandler.postDelayed(runTakePicture(), delayInMillisecondsValue);
+            }
+            else {
+                progressCount.setText(String.valueOf("Done"));
+                mCamera.startPreview();
+            //    wl.release();
             }
         }
     };

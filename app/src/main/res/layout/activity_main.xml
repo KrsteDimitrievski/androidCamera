@@ -12,17 +12,54 @@
         android:id="@+id/camera_preview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-        />
+        android:layout_weight="0.9"
+        >
+
+    </FrameLayout>
 
     <Button
         android:id="@+id/button_capture"
-        android:text="Capture"
+        android:text="@string/capture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:onClick="getPicture"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentLeft="true"
+        android:onClick="getTimelapse"
         />
+
+    <EditText
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/numberOfPhotos"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginTop="70dp"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/photo_number" />
+
+    <EditText
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/delayInSeconds"
+        android:layout_gravity="left|bottom"
+        android:layout_marginTop="130dp"
+        android:layout_alignParentLeft="true"
+        android:hint="@string/delay"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/done"
+        android:id="@+id/progressCount"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"/>
+
 
 
 </RelativeLayout>
